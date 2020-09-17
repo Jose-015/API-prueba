@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title> Subir Imagenes	</title>
+</head>
+<body>
+	<form action="/subirImagen" method="POST" encType="multipart/form-data"> 
+		
+		<input type="file" name="foto" multiple>
+
+		<select name="Opcion">
+			<option value='1'> Carpeta 1</option>
+			<option value='2'> Carpeta 2</option>
+			<option value='3'> Carpeta 3</option>
+			<option value='4'> Carpeta 4</option>
+		</select>
+		
+		<input type="submit" value="subir">
+	</form>
+
+	<form action="/verImagen" method="POST" encType="multipart/form-data">
+		
+	</form>
+
+</body>
+</html>

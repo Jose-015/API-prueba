@@ -1,0 +1,12 @@
+# Archivo para ignorar directorios y archivos del repositorio
+#
+
+MongooseMultipleSchema.zip
+
+node_modules/
+
+staticfiles/Fotos/Carpeta1/
+staticfiles/Fotos/Carpeta2/
+staticfiles/Fotos/Carpeta3/
+staticfiles/Fotos/Carpeta4/
+

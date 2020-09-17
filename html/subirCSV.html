@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Exportar CSV</title>
+</head>
+<body>
+
+	El siguiente apartado es para subir los datos de las collecciones, para la base de datos principal de los arboles
+	validar primero, y subirlo aparte.
+    <div>
+    <form action="/importarCSV" method="POST" encType="multipart/form-data">
+        
+        <input type="file" name="file" accept="*.csv" /><br/><br/>
+        <input type="file" name="file2" accept="*.csv" /><br/><br/>
+        <input type="file" name="file3" accept="*.csv" /><br/><br/>
+        <input type="file" name="file4" accept="*.csv" /><br/><br/>
+        <input type="file" name="file5" accept="*.csv" /><br/><br/>
+        <input type="file" name="file6" accept="*.csv" /><br/><br/>
+        
+        <input type="submit" value="Enviar" />
+    </form>
+    </div>
+
+    <br><br>
+    Unicamente para validar el contenido de la basedatos principal de los arboles
+    <div>
+    <form action="/validarBaseDatos" method="POST" enctype="multipart/form-data">
+    	    <input type="file" name="file7" accept="*.csv" /><br/><br/>
+    	    <input type="submit" value="Verificar">
+    </form>
+    </div>
+</body>
+</html>
