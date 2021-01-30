@@ -1,15 +1,15 @@
 
 const express = require('express'); //Para creacion del servidor
-const router = express.Router();
+const router = express.Router(); // Nos permite manejar las rutas, en un tipo de clase, para exportarlas sin problemas.
 const database = require('mongoose'); //manejo de mongodb
 
-//const clase2 = database.model('clas', clase); //metodo exportar modeles
 const csvtojson = require('csvtojson'); //para poder importar CSV
-//const csvtojson = require('async-csv');
-/*const fs = require('fs');
+const fs = require('fs'); //Permite el manejo de archivos fisicos del servidor.
+//const csvtojson = require('async-csv'); 
 //const fastcsv = require('fast-csv');*/
 
-/*const multer = require('multer');
+/* Librerias para el manejo de archivos actualmente no se usa.
+const multer = require('multer');
 const upload = multer({dest: './staticfiles/Fotos'});///*
 
 
@@ -21,6 +21,7 @@ const {
 	escala, floracion, riego, serviciosEcosistemicos, fotos
 } = require('../basedatos/basedatos');
 
+//const {	clase: clase2 }= require('../basedatos/basedatos'); //Sintaxis me permite extraer los elementos deseados del objeto.
 
 /* Directorio Principal de la Web*/
 router.get('/', (req, res)=>{
@@ -35,7 +36,6 @@ Funciones para registrar y loguear usuarios
 router.post('/api/registrar', async function (req, res){
 	console.log(req.body);
 	//await user.insert(req.body);
-	console.log(clase);
 	res.send(200, req.body); //validacion de usuarios
 	//guardar.
 });
@@ -57,18 +57,15 @@ router.get('/api/obtener', async function (req, res){
 /* ================================================================================
  Rutas para pruebas de acceso a datos por medio de url
 */
-// se usa junto con http:///obtener/valor1/valor2
-// para usar el url clasico http://localhost:3000/registrarse?nombre=valor1&contrasena=valor2
-// usar req.query;
+// para usar el url clasico http://localhost:3000/registrarse?nombre=valor1&contrasena=valor2,  usar req.query;
+// para usar url http:///obtener/valor1/valor2 usar req.params.VARIABLE:
+// Si se desa usar json, usar req.body
 router.get('/obtener/:i/:abc', (req, res)=>{
 	const i = req.params.i;
 	res.send(i + ' ' + req.params.abc);
 });
-
 //se usa para guardar datos de un metodo post, pensado en un archivo js, no basedatos
-// si se agrega parametros se pueden usar con la url /obtener/:id y usar req.params
 //router.post('/guardar', (req, res)=>{
-
 	//const {nombre, fecha} = req.body;
 	//combrobar que existe
 	/*if(){
@@ -79,25 +76,23 @@ router.get('/obtener/:i/:abc', (req, res)=>{
 		res.status(500).json({erro: 'error en el servidor'}); //Nuevo formato para los codigos
 	}//*/
 //});
-// se usa para imprimir un dato json en la pagina
+// Ejemplo para responder con un dato del tipo json
 router.get('/prueba', (req, res)=>{
 	const dato = {
 		'nombre' : 'perro',
 		'hola' : 'comoestas',
 		'edad' : 34
 	};
-	//res.send(dato);
-	res.json(dato); //Devuelve un Json, se puede usar res.json({objet});
+	res.send(dato); //Devuelve texto
+	//res.json(dato); //Devuelve un Json, se puede usar res.json({objet});
 });
 /* ================================================================================
  Funciones par poder importar datos CSV a la base de datos.
 */
-
 router.get('/importarCSV', function (req, res){
 	res.sendFile('html/subirCSV.html', {root: './'})
 	//res.end();
 });
-
 async function validar(nameCollection, dato){
 	//Busca que el dato a introducir sea valido
 	await nameCollection.findOne({'VALOR': dato}, (err, result)=>{
@@ -186,8 +181,6 @@ function guardarDatos(nameCollection, data){
 		}//*/
 	});
 }
-
-
 async function guardar(nameCollection, data){
 	//return new Promise( async (resolve, reject) => {
 		console.log('como estas bb')
@@ -207,8 +200,6 @@ async function guardar(nameCollection, data){
 	});//*/
 	//});
 }
-
-
 function verificarDatos(data){
 	switch (valores[0]) {
 		 			case 'ORIGEN':
@@ -252,7 +243,6 @@ function verificarDatos(data){
 		  				break;
 		  			}
 }
-
 function VerificarArchivos(archivos){
 	return new Promise( (resolve, reject) =>{
 	//Object.entries(data).forEach( async (archivos) => {
@@ -291,13 +281,13 @@ function VerificarArchivos(archivos){
 	//});
 	});
 }
-
 router.post('/importarCSV', async (req, res)=>{
 
 	const data = req.files;
-	if(data == null){ console.log('No hay elementos seleccionados'); res.redirect('/importarCSV');}
-	//console.log(typeof data.file);
-
+	if(data == null){ 
+		console.log('No hay elementos seleccionados'); res.redirect('/importarCSV');
+	}
+	
 	//obtengo el nombre de los documentos csv para saber en que coleccion van a ir los datos
 	await Object.entries(data).forEach( async (archivos) => {
 		var promesa = VerificarArchivos(archivos);
@@ -338,23 +328,24 @@ router.post('/importarCSV', async (req, res)=>{
 /* ================================================================================
  Funciones par poder guardar imagenes CSV a la base de datos.
 */
-
 router.get('/subirImagen', async (req, res)=>{
 	res.sendFile('html/subirImagen.html', {root:'./'});
 });
 
-router.get('/visualizarImagen', async (req, res)=>{
-	res.sendFile('staticfiles/Fotos/Carpeta1/ArchLinux.jpg', {root: './'});
+router.get('/visualizarImagen/:id', async (req, res)=>{
+	var id=req.params.id;
+	res.sendFile('staticfiles/Fotos/Carpeta1/'+id, {root: './'});
 } );
 
 async function GuardarFotos(req, res, nombreCarpeta){
 	var i=0;
-	if(Object.keys(req.files.foto).length===9 && Object.keys(req.files.foto)[8] === 'mv'){
-		console.log(req.files.foto.name);
-		req.files.foto.mv('./staticfiles/Fotos/'+nombreCarpeta+'/'+req.files.foto.name, async function(err) {
+	//console.log("Console :",req.files);
+	if(Object.keys(req.files.file).length==9 && Object.keys(req.files.file)[8] == 'mv'){
+		console.log(req.files.file.name);
+		req.files.file.mv('./staticfiles/Fotos/'+nombreCarpeta+'/'+req.files.file.name, async function(err) {
 			if (err){ return res.status(500).send(err);}
 			var savedata = await new fotos({
-				'Nombre': req.files.foto.name,
+				'Nombre': req.files.file.name,
 			    'Ruta': './staticfiles/Fotos/'+nombreCarpeta+'/'
 			}).save( async function(err, result) {
 			    if (err){throw err;}
@@ -365,7 +356,7 @@ async function GuardarFotos(req, res, nombreCarpeta){
 			})
 		});
 	}else{
-		await Object.entries(req.files.foto).forEach( async (archivos) => {
+		await Object.entries(req.files.file).forEach( async (archivos) => {
 			await archivos[1].mv('./staticfiles/Fotos/'+nombreCarpeta+'/'+archivos[1].name, async function(err) {
 				if (err){ console.log('error')}//return res.status(500).send(err);}
 				
@@ -378,8 +369,8 @@ async function GuardarFotos(req, res, nombreCarpeta){
 					if(result) {
 				    	console.log(result);//res.json(result)
 				    }
-				    if(i===Object.keys(req.files.foto).length){
-				       	res.send('Archivo Trepado y Ruta Guardada');
+				    if(i==Object.keys(req.files.file).length){
+				       	res.send({'hola' : 'xD'});//'Archivo Trepado y Ruta Guardada');
 				    }
 				})
 			});//*/
@@ -387,18 +378,18 @@ async function GuardarFotos(req, res, nombreCarpeta){
 	}
 }
 
-/*mOutputStream.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename="+ sourceFileUri + strLineEnd);
-mOutputStream.writeBytes("Content-Disposition: form-data; name=Opcion; value=1" + strLineEnd);
-mOutputStream.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename="+ sourceFileUri + strLineEnd);*/
-
 router.post('/subirImagen', async (req, res)=>{
-	console.log(req);
+	console.log(req.files);
+	//console.log(req.body);
+	//res.json({'respuesta':'Perros'});
+
 	//console.log(Object.keys(req.files.foto));
 	//console.log(parseFloat(req.body.Opcion));
-	if (!req.files || Object.keys(req.files).length === 0) {
-	return res.status(400).send('No files were uploaded.');
+	if (!req.files.file || Object.keys(req.files.file).length == 0) {
+		return res.status(400).send('No files were uploaded.');
   	}
-	
+
+	console.log("aqui estoy");
 	// The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
 	//let sampleFile = req.files.foto[0];
 	//console.log(sampleFile);
@@ -432,8 +423,20 @@ router.post('/subirImagen', async (req, res)=>{
 			break;
 	}
 	console.log("Fin del afuncion Post");
+	//res.send('subirImagen'); //*/
 });
 
+router.get('/Documentos/:id', (req, res)=>{
+	var id=req.params.id;
+	fs.readdir('./staticfiles/Fotos/'+id, function (err, archivos) {
+		if (err) {
+			onError(err);
+			return;
+		}
+		console.log(archivos);
+		res.send(archivos);
+	});
+});
 
 /* ================================================================================
 node-fetch; Se usa para usar otros api
