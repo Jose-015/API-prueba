@@ -15,7 +15,7 @@ const {
 	escala, floracion, riego, serviciosEcosistemicos
 } = require('../basedatos/basedatos');
 
-	
+
 /* Directorio Principal de la Web*/
 router.get('/', (req, res)=>{
 	res.send({'title': 'hola'});
